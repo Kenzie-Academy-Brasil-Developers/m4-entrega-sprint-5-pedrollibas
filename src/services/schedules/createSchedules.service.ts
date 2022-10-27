@@ -15,6 +15,20 @@ const createSchedulesService = async ({
   const usersRepository = AppDataSource.getRepository(User);
   const propertiesRepository = AppDataSource.getRepository(Properties);
 
+  const users = await usersRepository.find();
+  const verifyUser = users.find((elem) => elem.id === userId);
+
+  if (!verifyUser) {
+    throw new AppError("User not exists", 400);
+  }
+
+  const properties = await propertiesRepository.find();
+  const verifyProperties = properties.find((elem) => elem.id === propertyId);
+
+  if (!verifyProperties) {
+    throw new AppError("Property not exists", 404);
+  }
+
   const newDate = new Date(`${date.split("/").join("-")} ${hour}`);
   const day = newDate.getDay();
   const newHour = newDate.getHours();
@@ -32,23 +46,9 @@ const createSchedulesService = async ({
     const date = new Date(`${elem.date} ${elem.hour}`);
     return date.getTime() === newDate.getTime();
   });
-  
+
   if (verifyDate) {
     throw new AppError("Day ocuped", 400);
-  }
-
-  const users = await usersRepository.find();
-  const verifyUser = users.find((elem) => elem.id === userId);
-
-  if (!verifyUser) {
-    throw new AppError("User not exists", 404);
-  }
-
-  const properties = await propertiesRepository.find();
-  const verifyProperties = properties.find((elem) => elem.id === propertyId);
-
-  if (!verifyProperties) {
-    throw new AppError("Property not exists", 404);
   }
 
   const schedule = schedulesRepository.create({

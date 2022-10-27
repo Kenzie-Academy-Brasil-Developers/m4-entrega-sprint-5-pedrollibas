@@ -20,7 +20,7 @@ export class UsersProperties {
   @Column({ type: "time" })
   hour: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {eager: true})
   user: User;
 
   @ManyToOne(() => Properties)
